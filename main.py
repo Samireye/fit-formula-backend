@@ -23,6 +23,10 @@ class WorkoutRequest(BaseModel):
     sessions_per_week: int
     medical_conditions: Optional[str] = None
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to FitFormula API"}
+
 @app.post("/api/workout")
 async def generate_workout(request: WorkoutRequest):
     try:
@@ -41,7 +45,3 @@ async def generate_workout(request: WorkoutRequest):
             status_code=500,
             detail=f"Failed to generate workout plan: {str(e)}"
         )
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
