@@ -1,20 +1,19 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from services.workoutGeneration import generate_workout_plan
 
 app = FastAPI()
 
-# Configure CORS with more specific settings
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,  # Changed to False since we're using "*" for origins
-    allow_methods=["GET", "POST", "OPTIONS"],  # Explicitly list allowed methods
+    allow_credentials=False,
+    allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=600,  # Cache preflight requests for 10 minutes
 )
 
 class WorkoutRequest(BaseModel):
@@ -29,25 +28,44 @@ class WorkoutRequest(BaseModel):
 async def root():
     return {"message": "Welcome to FitFormula API"}
 
-@app.options("/api/workout")
-async def workout_options():
-    return {"message": "OK"}
-
-@app.post("/api/workout")
-async def generate_workout(request: WorkoutRequest):
-    try:
-        workout_plan = generate_workout_plan(
-            fitness_level=request.fitness_level,
-            equipment_available=request.available_equipment,
-            goal=request.goals,
-            time_available=request.time_per_session,
-            sessions_per_week=request.sessions_per_week,
-            medical_conditions=request.medical_conditions
+@app.api_route("/api/workout", methods=["POST", "OPTIONS"])
+async def workout_endpoint(request: Request):
+    if request.method == "OPTIONS":
+        return JSONResponse(
+            content={"message": "OK"},
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+            },
         )
-        return {"workout_plan": workout_plan}
+    
+    try:
+        workout_request = WorkoutRequest(**await request.json())
+        workout_plan = generate_workout_plan(
+            fitness_level=workout_request.fitness_level,
+            equipment_available=workout_request.available_equipment,
+            goal=workout_request.goals,
+            time_available=workout_request.time_per_session,
+            sessions_per_week=workout_request.sessions_per_week,
+            medical_conditions=workout_request.medical_conditions
+        )
+        return JSONResponse(
+            content={"workout_plan": workout_plan},
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+            },
+        )
     except Exception as e:
         print(f"Error in /api/workout endpoint: {str(e)}")
-        raise HTTPException(
+        return JSONResponse(
             status_code=500,
-            detail=f"Failed to generate workout plan: {str(e)}"
+            content={"detail": f"Failed to generate workout plan: {str(e)}"},
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+            },
         )
