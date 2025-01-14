@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from services.workoutGeneration import generate_workout_plan
+from services.mealPlanGeneration import generate_meal_plan
 
 app = FastAPI()
 
@@ -23,6 +24,15 @@ class WorkoutRequest(BaseModel):
     time_per_session: int
     sessions_per_week: int
     medical_conditions: Optional[str] = None
+
+class MealPlanRequest(BaseModel):
+    age: int
+    gender: str
+    weight: float
+    height: float
+    activity_level: str
+    goal: str
+    dietary_restrictions: List[str]
 
 @app.get("/")
 async def root():
@@ -67,6 +77,52 @@ async def workout_endpoint(request: Request):
         return JSONResponse(
             status_code=500,
             content={"detail": f"Failed to generate workout plan: {str(e)}"},
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+            },
+        )
+
+@app.api_route("/api/generate-meal-plan", methods=["POST", "OPTIONS"])
+async def meal_plan_endpoint(request: Request):
+    if request.method == "OPTIONS":
+        return JSONResponse(
+            content={"message": "OK"},
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+            },
+        )
+    
+    try:
+        meal_request = MealPlanRequest(**await request.json())
+        meal_plan, calculations = generate_meal_plan(
+            age=meal_request.age,
+            gender=meal_request.gender,
+            weight=meal_request.weight,
+            height=meal_request.height,
+            activity_level=meal_request.activity_level,
+            goal=meal_request.goal,
+            dietary_restrictions=meal_request.dietary_restrictions
+        )
+        return JSONResponse(
+            content={
+                "meal_plan": meal_plan,
+                "calculations": calculations
+            },
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "*",
+            },
+        )
+    except Exception as e:
+        print(f"Error in /api/generate-meal-plan endpoint: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Failed to generate meal plan: {str(e)}"},
             headers={
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "POST, OPTIONS",
