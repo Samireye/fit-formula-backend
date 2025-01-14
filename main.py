@@ -89,7 +89,7 @@ async def workout_endpoint(request: Request):
             },
         )
 
-@app.api_route("/api/generate-meal-plan", methods=["POST", "OPTIONS"])
+@app.api_route("/api/meal-plan", methods=["POST", "OPTIONS"])
 async def meal_plan_endpoint(request: Request):
     if request.method == "OPTIONS":
         return JSONResponse(
@@ -124,7 +124,7 @@ async def meal_plan_endpoint(request: Request):
             },
         )
     except Exception as e:
-        print(f"Error in /api/generate-meal-plan endpoint: {str(e)}")
+        print(f"Error in /api/meal-plan endpoint: {str(e)}")
         return JSONResponse(
             status_code=500,
             content={"detail": f"Failed to generate meal plan: {str(e)}"},
