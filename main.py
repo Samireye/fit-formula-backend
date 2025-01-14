@@ -28,6 +28,10 @@ class WorkoutRequest(BaseModel):
 async def root():
     return {"message": "Welcome to FitFormula API"}
 
+@app.get("/api/test")
+async def test_endpoint():
+    return {"message": "API is working!", "status": "ok"}
+
 @app.api_route("/api/workout", methods=["POST", "OPTIONS"])
 async def workout_endpoint(request: Request):
     if request.method == "OPTIONS":
