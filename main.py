@@ -6,13 +6,15 @@ from services.workoutGeneration import generate_workout_plan
 
 app = FastAPI()
 
-# Configure CORS
+# Configure CORS with more specific settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_origins=["*"],
+    allow_credentials=False,  # Changed to False since we're using "*" for origins
+    allow_methods=["GET", "POST", "OPTIONS"],  # Explicitly list allowed methods
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=600,  # Cache preflight requests for 10 minutes
 )
 
 class WorkoutRequest(BaseModel):
@@ -26,6 +28,10 @@ class WorkoutRequest(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Welcome to FitFormula API"}
+
+@app.options("/api/workout")
+async def workout_options():
+    return {"message": "OK"}
 
 @app.post("/api/workout")
 async def generate_workout(request: WorkoutRequest):
