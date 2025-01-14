@@ -51,13 +51,150 @@ def generate_meal_plan(
     
     # Format dietary restrictions
     restrictions_text = ", ".join(dietary_restrictions) if dietary_restrictions else "None"
-    
-    # Generate the meal plan
-    meal_plan = f"""# Your Personalized Meal Plan
+
+    # Define meal options based on dietary preferences
+    meal_options = {
+        "carnivore": {
+            "breakfast": [
+                "Eggs and bacon",
+                "Ground beef with eggs",
+                "Steak and eggs",
+                "Pork chops",
+                "Beef liver"
+            ],
+            "snacks": [
+                "Beef jerky",
+                "Hard-boiled eggs",
+                "Pork rinds",
+                "Bone broth"
+            ],
+            "lunch_dinner": [
+                "Ribeye steak",
+                "Ground beef patties",
+                "Chicken thighs",
+                "Lamb chops",
+                "Turkey legs",
+                "Beef brisket"
+            ]
+        },
+        "pescatarian": {
+            "breakfast": [
+                "Greek yogurt with berries",
+                "Smoked salmon with eggs",
+                "Tuna avocado toast",
+                "Sardines on whole grain bread"
+            ],
+            "snacks": [
+                "Mixed nuts",
+                "Seaweed snacks",
+                "Cottage cheese",
+                "Canned sardines"
+            ],
+            "lunch_dinner": [
+                "Grilled salmon",
+                "Baked cod",
+                "Shrimp stir-fry",
+                "Tuna steak",
+                "Sea bass with vegetables",
+                "Mussels in garlic sauce"
+            ]
+        }
+    }
+
+    # Select appropriate meal template based on dietary preferences
+    if "carnivore" in dietary_restrictions:
+        meals = meal_options["carnivore"]
+        meal_plan = f"""# Your Personalized Carnivore Meal Plan
 
 ## Daily Nutritional Targets
 - **Target Calories:** {int(target_calories)} calories
-- **Dietary Restrictions:** {restrictions_text}
+- **Dietary Preferences:** {restrictions_text}
+
+## Meal Schedule
+
+### Breakfast (30% of daily calories: {int(target_calories * 0.30)} cal)
+- {meals["breakfast"][0]}
+- {meals["breakfast"][1]}
+
+### Morning Snack (10% of daily calories: {int(target_calories * 0.10)} cal)
+- {meals["snacks"][0]}
+- {meals["snacks"][1]}
+
+### Lunch (30% of daily calories: {int(target_calories * 0.30)} cal)
+- {meals["lunch_dinner"][0]}
+- {meals["lunch_dinner"][1]}
+
+### Afternoon Snack (10% of daily calories: {int(target_calories * 0.10)} cal)
+- {meals["snacks"][2]}
+- {meals["snacks"][3]}
+
+### Dinner (20% of daily calories: {int(target_calories * 0.20)} cal)
+- {meals["lunch_dinner"][2]}
+- {meals["lunch_dinner"][3]}
+
+## Guidelines
+1. Focus on fatty cuts of meat for energy
+2. Include organ meats for nutrients
+3. Consider adding bone broth for minerals
+4. Salt to taste
+5. Eat when hungry, stop when full
+
+## Notes
+- This is a zero-carb, animal-based meal plan
+- Adjust portions to meet your caloric needs
+- Listen to your body and adjust meal timing as needed
+"""
+    elif "pescatarian" in dietary_restrictions:
+        meals = meal_options["pescatarian"]
+        meal_plan = f"""# Your Personalized Pescatarian Meal Plan
+
+## Daily Nutritional Targets
+- **Target Calories:** {int(target_calories)} calories
+- **Dietary Preferences:** {restrictions_text}
+
+## Meal Schedule
+
+### Breakfast (25% of daily calories: {int(target_calories * 0.25)} cal)
+- {meals["breakfast"][0]}
+- {meals["breakfast"][1]}
+
+### Morning Snack (15% of daily calories: {int(target_calories * 0.15)} cal)
+- {meals["snacks"][0]}
+- {meals["snacks"][1]}
+
+### Lunch (30% of daily calories: {int(target_calories * 0.30)} cal)
+- {meals["lunch_dinner"][0]}
+- Mixed green salad
+- Quinoa or brown rice
+
+### Afternoon Snack (10% of daily calories: {int(target_calories * 0.10)} cal)
+- {meals["snacks"][2]}
+- Fresh fruit
+
+### Dinner (20% of daily calories: {int(target_calories * 0.20)} cal)
+- {meals["lunch_dinner"][1]}
+- Steamed vegetables
+- Sweet potato or whole grain
+
+## Guidelines
+1. Include a variety of fish for omega-3s
+2. Eat plenty of plant-based proteins
+3. Include whole grains and legumes
+4. Focus on healthy fats from fish, nuts, and oils
+5. Aim for 2-3 servings of fish per day
+
+## Notes
+- Rotate between different types of fish for nutrient variety
+- Consider algae supplements for additional omega-3s
+- Include plant-based protein sources like legumes and quinoa
+"""
+    else:
+        # Original meal plan for other dietary preferences
+        meal_plan = f"""# Your Personalized Meal Plan
+
+## Daily Nutritional Targets
+- **Target Calories:** {int(target_calories)} calories
+- **Dietary Preferences:** {restrictions_text}
 
 ## Meal Schedule
 
