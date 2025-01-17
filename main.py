@@ -15,7 +15,9 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:5174",
         "https://fit-formula-frontend-yrs4.vercel.app",
-        "https://fit-formula-frontend.vercel.app"
+        "https://fit-formula-frontend.vercel.app",
+        "https://fit-formula-frontend-yrs4-3lzit5boz-samireyes-projects.vercel.app",
+        "https://fit-formula-frontend-yrs4-git-feature-614831-samireyes-projects.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
